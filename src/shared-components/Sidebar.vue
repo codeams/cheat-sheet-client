@@ -11,14 +11,11 @@
 
       <div class="sidebar--list">
         <ul class="topic--list">
-          <li>
-            <a href="topic.php">
-              Modelos de comunicación entre procesos
+          <li v-for='topic, index in topics'>
+            <a :href='"#/topics/" + index'>
+              {{ topic.title }}
             </a>
           </li>
-          <li>Sincronización de relojes</li>
-          <li>Transacciones en Sistemas Distribuidos Archivo</li>
-          <li>Seguros e interbloqueos Archivo</li>
         </ul>
       </div>
     </div>
@@ -30,7 +27,17 @@
     name: 'Sidebar',
 
     data () {
-      return {}
+      return {
+        topics: []
+      }
+    },
+
+    props: ['db'],
+
+    created () {
+      this.db.ref('topics').on('value', (snap) => {
+        this.topics = snap.val()
+      })
     }
   }
 </script>

@@ -2,7 +2,7 @@
   <div id='topic' class='topic'>
     <div class="container-fluid">
         <div class="row">
-          <sidebar></sidebar>
+          <sidebar :db='db'></sidebar>
 
           <div class="col-sm-10 main">
             <div class="col-md-12">
@@ -12,104 +12,27 @@
                   <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                   <i class="fa fa-trash-o" aria-hidden="true"></i>
                 </div>
-                <h3>Modelos de comunicación entre procesos</h3>
+                <h3>{{ topic.title }}</h3>
+                <h4 @click='$router.push("/topics/" + id + "/definitions/new")' style='cursor:pointer; text-decoration:underline;'>Agregar definición</h4>
 
               </div>
             </div>
             <div class="container">
 
             <div class="row justify-content-start">
-              <div class="col-3">
+              <div v-for='definition, index in topic.definitions' class="col-3">
                 <div class="concept-card">
+                  <h4 class="concept--title">
+                    {{ definition.title }}
+                  </h4>
 
-                  <h4 class="concept--title">Protocolo UDP</h4>
                   <span class="concept--definition">
-                  <p class="concept--highlight">
-                    Este protocolo es orientado a conexión.
-                  </p>
-                  Este protocolo es de conexiones inferiores.
-                  Este protocolo es muy simple ya que no proporciona detección
-                  de errores (no es un protocolo orientado a conexión).
+                    {{ definition.content }}
                   </span>
+
                   <div class="concept--options">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                  </div>
-
-                </div>
-              </div>
-              <div class="col-3">
-                <div class="concept-card">
-
-                  <h4 class="concept--title">Protocolo UDP</h4>
-                  <span class="concept--definition">
-                  <p class="concept--highlight">
-                    Este protocolo es orientado a conexión.
-                  </p>
-                  Este protocolo es de conexiones inferiores.
-                  Este protocolo es muy simple ya que no proporciona detección
-                  de errores (no es un protocolo orientado a conexión).
-                  </span>
-                  <div class="concept--options">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                  </div>
-
-                </div>
-              </div>
-              <div class="col-3">
-                <div class="concept-card">
-
-                  <h4 class="concept--title">Protocolo UDP</h4>
-                  <span class="concept--definition">
-                  <p class="concept--highlight">
-                    Este protocolo es orientado a conexión.
-                  </p>
-                  Este protocolo es de conexiones inferiores.
-                  Este protocolo es muy simple ya que no proporciona detección
-                  de errores (no es un protocolo orientado a conexión).
-                  </span>
-                  <div class="concept--options">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                  </div>
-
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="concept-card">
-
-                  <h4 class="concept--title">Protocolo UDP</h4>
-                  <span class="concept--definition">
-                  <p class="concept--highlight">
-                    Este protocolo es orientado a conexión.
-                  </p>
-                  Este protocolo es de conexiones inferiores.
-                  Este protocolo es muy simple ya que no proporciona detección
-                  de errores (no es un protocolo orientado a conexión).
-                  </span>
-                  <div class="concept--options">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                  </div>
-
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="concept-card">
-
-                  <h4 class="concept--title">Protocolo UDP</h4>
-                  <span class="concept--definition">
-                  <p class="concept--highlight">
-                    Este protocolo es orientado a conexión.
-                  </p>
-                  Este protocolo es de conexiones inferiores.
-                  Este protocolo es muy simple ya que no proporciona detección
-                  de errores (no es un protocolo orientado a conexión).
-                  </span>
-                  <div class="concept--options">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    <a @click.stop.prevent='gotoEditDefinition(index)' href='#/'>edit</a>
+                    <a @click.stop.prevent='deleteDefinition(index)' href='#/'>delete</a>
                   </div>
                 </div>
               </div>
@@ -128,7 +51,86 @@
     name: 'Topic',
 
     data () {
-      return {}
+      return {
+        id: null,
+        topic: {
+          title: '...',
+          definitions: []
+        }
+      }
+    },
+
+    props: ['db', 'auth'],
+
+    watch: {
+      id (currentId, previousId) {
+        this.setTopicsRef(currentId, previousId)
+      },
+
+      '$route' (currentRoute, previousRoute) {
+        let currentId = currentRoute.params.id
+        let previousId = previousRoute.params.id
+
+        this.setTopicsRef(currentId, previousId)
+      }
+    },
+
+    mounted () {
+      this.id = this.$route.params.id
+    },
+
+    created () {
+      this.auth.onAuthStateChanged((user) => {
+        if (!user) this.$router.replace('/login')
+      })
+    },
+
+    methods: {
+      setTopicsRef (currentId, previousId) {
+        console.log('set topics ref called')
+
+        if (previousId) this.db.ref('topics').child(previousId).off('value')
+
+        this.db.ref('topics').child(currentId).on('value', (snap) => {
+          console.log('asked topic')
+
+          let val = snap.val()
+
+          if (val) this.topic = val
+          else {
+            this.topic = {
+              title: 'No se encuentra un topic con el id "' + this.id + '"',
+              definitions: []
+            }
+          }
+        })
+      },
+
+      gotoEditDefinition (definitionId) {
+        this.$router.push('/topics/' + this.id + '/definitions/' + definitionId)
+      },
+
+      deleteDefinition (definitionId) {
+        let definition = this.topic.definitions[definitionId]
+
+        if (definition.creatorId === this.auth.currentUser.uid) {
+          let really = confirm('¿Seguro que deseas eliminar esta definición?')
+          if (really) {
+            this.db.ref('topics')
+              .child(this.id)
+              .child('definitions')
+              .child(definitionId)
+              .remove()
+                .then(() => {
+                  alert('Definición eliminada con éxito')
+                }).catch(() => {
+                  alert('Hubo un error en el servidor remoto al eliminar la definición.')
+                })
+          }
+        } else {
+          alert('Solo el creator de la definición puede eliminarla.')
+        }
+      }
     },
 
     components: {

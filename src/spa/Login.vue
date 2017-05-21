@@ -34,23 +34,19 @@
 </template>
 
 <script>
-  import Firebase from 'firebase'
-  import initializeFirebase from '@/utils/initialize-firebase'
-
   export default {
     name: 'Login',
 
     data () {
       return {
-        auth: null,
         provider: null
       }
     },
 
+    props: ['Firebase', 'theFirebase', 'auth'],
+
     created () {
-      let theFirebase = initializeFirebase()
-      this.auth = theFirebase.auth()
-      this.provider = new Firebase.auth.GoogleAuthProvider()
+      this.provider = new this.Firebase.auth.GoogleAuthProvider()
 
       this.auth.onAuthStateChanged((user) => {
         if (user) this.$router.replace('/topic/1')

@@ -11,7 +11,7 @@ export default new Router({
     {
       path: '/',
       name: 'root',
-      beforeEnter: (to, from, next) => next('/topic/1')
+      beforeEnter: (to, from, next) => next('/topics')
     },
     {
       path: '/login',
@@ -19,13 +19,18 @@ export default new Router({
       component: Login
     },
     {
-      path: '/topic/:id',
+      path: '/topics/:id',
       name: 'Topic',
       component: Topic
     },
     {
-      path: '/form/:id',
-      name: 'Form',
+      path: '/topics/:topicId/definitions/:definitionId',
+      name: 'Edit',
+      component: Form
+    },
+    {
+      path: '/topics/:topicId/definitions/:definitionId',
+      name: 'Add',
       component: Form
     }
   ]

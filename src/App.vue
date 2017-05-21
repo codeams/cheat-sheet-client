@@ -1,12 +1,36 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <router-view
+      :Firebase='Firebase'
+      :theFirebase='theFirebase'
+      :auth='auth'
+      :db='db'>
+    </router-view>
   </div>
 </template>
 
 <script>
+  import Firebase from 'firebase'
+  import initializeFirebase from '@/utils/initialize-firebase'
+
   export default {
-    name: 'app'
+    name: 'app',
+
+    data () {
+      return {
+        Firebase: null,
+        theFirebase: null,
+        auth: null,
+        db: null
+      }
+    },
+
+    created () {
+      this.Firebase = Firebase
+      this.theFirebase = initializeFirebase()
+      this.auth = this.theFirebase.auth()
+      this.db = this.theFirebase.database()
+    }
   }
 </script>
 
