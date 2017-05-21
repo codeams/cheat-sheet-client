@@ -18,6 +18,10 @@
           </li>
         </ul>
       </div>
+
+      <div class='logout'>
+        <button @click='logout()' class='btn btn-sm btn-warning'>Cerrar sesión</button>
+      </div>
     </div>
   </div>
 </template>
@@ -32,12 +36,22 @@
       }
     },
 
-    props: ['db'],
+    props: ['auth', 'db'],
 
     created () {
       this.db.ref('topics').on('value', (snap) => {
         this.topics = snap.val()
       })
+    },
+
+    methods: {
+      logout () {
+        this.auth.signOut().then(() => {
+          console.log('Successfully logout')
+        }).catch(() => {
+          alert('Ha ocurrido un error en el servidor remoto al intentar concluir la sesión.')
+        })
+      }
     }
   }
 </script>

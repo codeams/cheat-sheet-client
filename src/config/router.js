@@ -14,6 +14,11 @@ export default new Router({
       beforeEnter: (to, from, next) => next('/topics')
     },
     {
+      path: '/topics',
+      name: 'TopicsRoot',
+      beforeEnter: (to, from, next) => next('/topics/first')
+    },
+    {
       path: '/login',
       name: 'Login',
       component: Login

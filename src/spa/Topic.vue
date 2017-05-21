@@ -2,7 +2,7 @@
   <div id='topic' class='topic'>
     <div class="container-fluid">
         <div class="row">
-          <sidebar :db='db'></sidebar>
+          <sidebar :auth='auth' :db='db'></sidebar>
 
           <div class="col-sm-10 main">
             <div class="col-md-12">
@@ -64,14 +64,24 @@
 
     watch: {
       id (currentId, previousId) {
+        if (currentId === 'first') {
+          this.db.ref('topics').once('value', (snap) => {
+            let topics = snap.val()
+            let keys = Object.keys(topics)
+            let firstKey = keys[0]
+
+            this.$router.replace(firstKey)
+          })
+        }
+
         this.setTopicsRef(currentId, previousId)
       },
 
       '$route' (currentRoute, previousRoute) {
-        let currentId = currentRoute.params.id
-        let previousId = previousRoute.params.id
+        this.id = currentRoute.params.id
+        // let previousId = previousRoute.params.id
 
-        this.setTopicsRef(currentId, previousId)
+        // this.setTopicsRef(currentId, previousId)
       }
     },
 

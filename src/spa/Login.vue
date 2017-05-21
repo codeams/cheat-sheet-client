@@ -49,7 +49,7 @@
       this.provider = new this.Firebase.auth.GoogleAuthProvider()
 
       this.auth.onAuthStateChanged((user) => {
-        if (user) this.$router.replace('/topic/1')
+        if (user) this.$router.replace('/')
       })
     },
 

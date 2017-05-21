@@ -1,7 +1,7 @@
 <template lang='html'>
   <div class="container-fluid">
      <div class="row">
-       <sidebar :db='db'></sidebar>
+       <sidebar :auth='auth' :db='db'></sidebar>
 
        <div class="col-md-9" style='background-color: white;'>
          <div class="col-md-12">
