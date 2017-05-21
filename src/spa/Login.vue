@@ -5,8 +5,8 @@
         <div class='col-md-5'>
           <div class='login--card text-center'>
             <h2 class='login--title'>cheat<strong>sheet</strong></h2>
-            <form>
-              <div class='form-group'>
+            <!-- <form> -->
+              <!-- <div class='form-group'>
                 <label for='exampleInputEmail1'>Email address</label>
                 <input type='email' class='form-control' id='exampleInputEmail1'
                   aria-describedby='emailHelp' placeholder='Enter email'>
@@ -19,12 +19,13 @@
                 <label for='exampleInputPassword1'>Password</label>
                 <input type='password' class='form-control'
                   id='exampleInputPassword1' placeholder='Password'>
-              </div>
+              </div> -->
 
-              <a class='btn btn-primary login--button' href='topic.php'>
-                Submit
+              <a @click.stop.prevent='signInWithGoogle()'
+                class='btn btn-primary login--button' href='#topic.php'>
+                Login with Google
               </a>
-            </form>
+            <!-- </form> -->
           </div>
         </div>
       </div>
@@ -33,13 +34,35 @@
 </template>
 
 <script>
-export default {
-  name: 'Login',
+  import Firebase from 'firebase'
+  import initializeFirebase from '@/utils/initialize-firebase'
 
-  data () {
-    return {}
+  export default {
+    name: 'Login',
+
+    data () {
+      return {
+        auth: null,
+        provider: null
+      }
+    },
+
+    created () {
+      let theFirebase = initializeFirebase()
+      this.auth = theFirebase.auth()
+      this.provider = new Firebase.auth.GoogleAuthProvider()
+
+      this.auth.onAuthStateChanged((user) => {
+        if (user) this.$router.replace('/topic/1')
+      })
+    },
+
+    methods: {
+      signInWithGoogle () {
+        this.auth.signInWithPopup(this.provider)
+      }
+    }
   }
-}
 </script>
 
 <style>
@@ -52,7 +75,6 @@ export default {
   }
 
   .login--card {
-    height: 400px;
     margin-top: 35%;
     padding: 25px 40px;
 
