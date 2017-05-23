@@ -70,7 +70,7 @@
             let keys = Object.keys(topics)
             let firstKey = keys[0]
 
-            this.$router.replace(firstKey)
+            this.$router.replace('/topics/' + firstKey)
           })
         }
 
