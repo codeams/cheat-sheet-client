@@ -11,8 +11,8 @@
 
       <div class="sidebar--list">
         <ul class="topic--list">
-          <li v-for='topic, index in topics'>
-            <a :href='"#/topics/" + index'>
+          <li v-for='topic in topics'>
+            <a :href='"#/topics/" + topic.id'>
               {{ topic.title }}
             </a>
           </li>
@@ -45,8 +45,11 @@
     props: ['auth', 'db'],
 
     created () {
-      this.db.ref('topics').on('value', (snap) => {
-        this.topics = snap.val()
+      this.db.ref('topics').orderByChild('title').on('value', (snap) => {
+        this.topics = []
+        snap.forEach(child => {
+          this.topics.push({ id: child.key, ...child.val() })
+        })
       })
     },
 
