@@ -16,6 +16,12 @@
               {{ topic.title }}
             </a>
           </li>
+          <li>
+            <button @click.stop.prevent='addTopic()'
+              class='btn btn-md btn-primary'>
+              Agregar tema
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -45,6 +51,18 @@
     },
 
     methods: {
+      addTopic () {
+        let name = prompt('Ingresa el nombre del tema a crear:')
+        let validName = typeof name === 'string' && name.length > 4
+
+        if (validName) {
+          this.db.ref('topics').push({
+            title: name,
+            definitions: []
+          })
+        }
+      },
+
       logout () {
         this.auth.signOut().then(() => {
           console.log('Successfully logout')
