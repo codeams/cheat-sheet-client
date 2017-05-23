@@ -58,7 +58,7 @@
         if (validName) {
           this.db.ref('topics').push({
             title: name,
-            definitions: []
+            definitions: {}
           })
         } else {
           alert('El nombre debe ser de al menos 4 caracteres')

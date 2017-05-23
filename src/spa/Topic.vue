@@ -21,6 +21,12 @@
             <div class="container">
 
             <div class="row justify-content-start">
+              <button @click.stop.prevent='deleteTopic()'
+                v-if='canDeleteTopic'
+                class='btn btn-md btn-danger'>
+                Eliminar tema
+              </button>
+
               <div v-for='definition, index in topic.definitions' class="col-3">
                 <div class="concept-card">
                   <h4 class="concept--title">
@@ -58,6 +64,12 @@
           title: '...',
           definitions: []
         }
+      }
+    },
+
+    computed: {
+      canDeleteTopic () {
+        return this.topic && !this.topic.definitions
       }
     },
 
@@ -108,6 +120,19 @@
             .set(name)
         } else {
           alert('El nombre debe ser de al menos 4 caracteres')
+        }
+      },
+
+      deleteTopic () {
+        if (this.canDeleteTopic) {
+          this.db.ref('topics').child(this.id).remove()
+            .then(() => {
+              this.$router.push('/')
+            }).catch(() => {
+              alert('Ha ocurrido un error en el servidor remoto al intentar elinimar el tema.')
+            })
+        } else {
+          alert('Solo pueden eliminarse temas que no tengan definiciones')
         }
       },
 
