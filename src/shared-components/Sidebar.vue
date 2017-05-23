@@ -60,6 +60,8 @@
             title: name,
             definitions: []
           })
+        } else {
+          alert('El nombre debe ser de al menos 4 caracteres')
         }
       },
 

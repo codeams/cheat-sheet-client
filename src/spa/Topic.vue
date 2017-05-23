@@ -13,6 +13,7 @@
                   <i class="fa fa-trash-o" aria-hidden="true"></i>
                 </div>
                 <h3>{{ topic.title }}</h3>
+                <h4 @click='renameTopic()' style='cursor:pointer; text-decoration:underline;'>Renombrar el tema</h4>
                 <h4 @click='$router.push("/topics/" + id + "/definitions/new")' style='cursor:pointer; text-decoration:underline;'>Agregar definición</h4>
 
               </div>
@@ -96,6 +97,20 @@
     },
 
     methods: {
+      renameTopic () {
+        let name = prompt('Ingresa el nuevo nombre para el tema:', this.topic.title)
+        let validName = typeof name === 'string' && name.length > 4
+
+        if (validName) {
+          this.db.ref('topics')
+            .child(this.id)
+            .child('title')
+            .set(name)
+        } else {
+          alert('El nombre debe ser de al menos 4 caracteres')
+        }
+      },
+
       setTopicsRef (currentId, previousId) {
         console.log('set topics ref called')
 
