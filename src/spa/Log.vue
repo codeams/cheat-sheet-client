@@ -8,7 +8,7 @@
           <h3>Log</h3>
           <input v-model='query' placeholder='Buscar'>
         </div>
-        <div class="container">
+        <div class="container-fluid" style="margin: 0 20px;">
           <div class="row justify-content-start log--header">
             <div class="col-sm-1">
               Acción
@@ -39,7 +39,7 @@
               {{ row.target }} - {{ row.title }}
             </div>
             <div class="col-sm-2">
-              {{ row.user }}
+              <a href='#' @click.stop.prevent='$router.push(`/log/uid/${row.uid}`)'>{{ row.user }}</a>
             </div>
             <div class="col-sm-4">
               {{ (new Date(parseInt(row.timestamp))).toUTCString() }}
@@ -79,8 +79,25 @@
       this.setLogRef()
     },
 
+    watch: {
+      $route (currentRoute) {
+        this.attribute = currentRoute.params.attribute
+        this.value = currentRoute.params.value
+      },
+
+      attribute () {
+        this.setLogRef()
+      },
+
+      value () {
+        this.setLogRef()
+      }
+    },
+
     methods: {
       setLogRef () {
+        this.db.ref('log').off()
+
         this.db.ref('log').on('value', (snap) => {
           let log = []
 
@@ -91,9 +108,6 @@
           log = log.reverse()
 
           if (this.attribute && this.value) {
-            console.log('attribute', this.attribute)
-            console.log('value', this.value)
-
             this.tabFilterColumn = this.attribute
             this.tabValues = [this.value]
             this.list = log
