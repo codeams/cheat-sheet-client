@@ -162,19 +162,38 @@
     },
 
     methods: {
+      log (row, then) {
+        let currentUser = this.auth.currentUser
+
+        this.db.ref('log')
+          .child(Date.now())
+          .set({
+            user: currentUser.displayName,
+            uid: currentUser.uid,
+            ...row
+          }).then(() => {
+            if (then && typeof then === 'function') then()
+          }).catch(() => {
+            alert('Ha ocurrido un error al guardar el log en el servidor remoto.')
+          })
+      },
+
       save () {
         let ref
+        let type
 
         if (this.definitionId === 'new') {
           ref = this.db.ref('topics')
             .child(this.topicId)
             .child('definitions')
             .push()
+          type = 'add'
         } else {
           ref = this.db.ref('topics')
           .child(this.topicId)
           .child('definitions')
           .child(this.definitionId)
+          type = 'edit'
         }
 
         ref.set({
@@ -183,7 +202,13 @@
           onUse: this.auth.currentUser.uid + ';' + Date.now(),
           title: this.definition.title
         }).then(() => {
-          this.$router.push('/topics/' + this.topicId)
+          this.log({
+            target: 'definition',
+            type,
+            title: this.definition.title
+          }, () => {
+            this.$router.push('/topics/' + this.topicId)
+          })
         }).catch(() => {
           alert('Hay un error con la conexión con el servidor remoto.')
         })

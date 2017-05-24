@@ -27,7 +27,7 @@
                 Eliminar tema
               </button>
 
-              <div v-for='definition, index in topic.definitions' class="col-3">
+              <div v-for='definition in topic.definitions' class="col-3">
                 <div class="concept-card">
                   <h4 class="concept--title">
                     {{ definition.title }}
@@ -38,8 +38,8 @@
                   </span>
 
                   <div class="concept--options">
-                    <a @click.stop.prevent='gotoEditDefinition(index)' href='#/'>edit</a>
-                    <a @click.stop.prevent='deleteDefinition(index)' href='#/'>delete</a>
+                    <a @click.stop.prevent='gotoEditDefinition(definition.id)' href='#'>edit</a>
+                    <a @click.stop.prevent='deleteDefinition(definition.id)' href='#'>delete</a>
                   </div>
                 </div>
               </div>
@@ -183,7 +183,7 @@
               let array = []
 
               for (let index in topic.definitions) {
-                array.push(topic.definitions[index])
+                array.push({ id: index, ...topic.definitions[index] })
               }
 
               this.topic.definitions = array.sort((a, b) => {
@@ -219,6 +219,11 @@
               .remove()
                 .then(() => {
                   alert('Definición eliminada con éxito')
+                  this.log({
+                    target: 'definition',
+                    type: 'delete',
+                    title: definition.title
+                  })
                 }).catch(() => {
                   alert('Hubo un error en el servidor remoto al eliminar la definición.')
                 })
