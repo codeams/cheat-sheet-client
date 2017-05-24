@@ -6,6 +6,7 @@
       <div class="col-sm-10 main">
         <div class="col-md-12">
           <h3>Log</h3>
+          <input v-model='query' placeholder='Buscar'>
         </div>
         <div class="container">
           <div class="row justify-content-start log--header">
@@ -23,7 +24,13 @@
             </div>
           </div>
 
-          <div v-for='row in log'
+          <div v-show='filteredList.length < 1' class="row justify-content-start log--card">
+            <div class="col-sm-12">
+              No hay registros para mostrar
+            </div>
+          </div>
+
+          <div v-show='filteredList.length > 0' v-for='row in filteredList'
             class="row justify-content-start log--card">
             <div class="col-sm-1">
               <span class="log--action">{{ row.type }}</span>
@@ -45,6 +52,7 @@
 </template>
 
 <script>
+  import ListFilterer from '@/mixins/List-filterer'
   import Sidebar from '@/shared-components/Sidebar'
 
   export default {
@@ -52,11 +60,16 @@
 
     data () {
       return {
-        log: null
+        list: null,
+
+        tabFilterColumn: 'uid',
+        searchableAttributes: ['tagret', 'type', 'user', 'uid', 'timestamp', 'title']
       }
     },
 
-    props: ['auth', 'db'],
+    props: ['auth', 'db', 'attribute', 'value'],
+
+    mixins: [ListFilterer],
 
     components: {
       Sidebar
@@ -75,7 +88,18 @@
             log.push({ timestamp: child.key, ...child.val() })
           })
 
-          this.log = log.reverse()
+          log = log.reverse()
+
+          if (this.attribute && this.value) {
+            console.log('attribute', this.attribute)
+            console.log('value', this.value)
+
+            this.tabFilterColumn = this.attribute
+            this.tabValues = [this.value]
+            this.list = log
+          } else {
+            this.list = log
+          }
         })
       }
     }

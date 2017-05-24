@@ -20,9 +20,16 @@ export default new Router({
       beforeEnter: (to, from, next) => next('/topics/first')
     },
     {
+      path: '/log/:attribute/:value',
+      name: 'PartialLog',
+      component: Log,
+      props: true
+    },
+    {
       path: '/log',
       name: 'Log',
-      component: Log
+      component: Log,
+      props: true
     },
     {
       path: '/login',
