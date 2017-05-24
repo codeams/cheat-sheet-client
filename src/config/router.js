@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/spa/Login'
 import Topic from '@/spa/Topic'
 import Form from '@/spa/Form'
+import Log from '@/spa/Log'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
       path: '/topics',
       name: 'TopicsRoot',
       beforeEnter: (to, from, next) => next('/topics/first')
+    },
+    {
+      path: '/log',
+      name: 'Log',
+      component: Log
     },
     {
       path: '/login',

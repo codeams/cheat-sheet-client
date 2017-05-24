@@ -172,6 +172,38 @@
 
         if (previousId) this.db.ref('topics').child(previousId).off('value')
 
+        if (currentId === 'all') {
+          this.db.ref('topics').on('value', (snap) => {
+            console.log('asked all topics')
+
+            // let topics = snap.val()
+            let definitions = []
+
+            snap.forEach((child) => {
+              let defs = child.val().definitions
+              for (let index in defs) definitions.push({ id: index, ...defs[index] })
+            })
+
+            let topic = {
+              title: 'Todas las definiciones',
+              definitions: definitions
+            }
+
+            this.topic = topic
+
+            let array = definitions
+
+            this.topic.definitions = array.sort((a, b) => {
+              let textA = a.title.toLowerCase()
+              let textB = b.title.toLowerCase()
+
+              return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+            })
+          })
+
+          return
+        }
+
         this.db.ref('topics').child(currentId).on('value', (snap) => {
           console.log('asked topic')
 

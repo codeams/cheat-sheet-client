@@ -4,7 +4,7 @@
       <div class="sidebar--brand">
         <i class="fa fa-sticky-note-o" style="font-size:25px;"
           aria-hidden="true"></i>
-        <p>cheat<strong>sheet</strong></p>
+        <p @click='$router.push("/")' style='cursor: pointer;'>cheat<strong>sheet</strong></p>
       </div>
 
       <h3 class="sidebar--subject">Sistemas Distribuidos</h3>
@@ -14,6 +14,16 @@
           <li v-for='topic in topics'>
             <a :href='"#/topics/" + topic.id'>
               {{ topic.title }}
+            </a>
+          </li>
+          <li>
+            <a href='#/topics/all'>
+              Todas las definiciones
+            </a>
+          </li>
+          <li style='margin-top: 30px;'>
+            <a href='#/log' style='color: orange !important;'>
+              Log de actividades
             </a>
           </li>
           <li>
