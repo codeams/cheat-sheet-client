@@ -13,8 +13,11 @@
                   <i class="fa fa-trash-o" aria-hidden="true"></i>
                 </div>
                 <h3>{{ topic.title }}</h3>
-                <h4 @click='renameTopic()' style='cursor:pointer; text-decoration:underline;'>Renombrar el tema</h4>
-                <h4 @click='$router.push("/topics/" + id + "/definitions/new")' style='cursor:pointer; text-decoration:underline;'>Agregar definición</h4>
+
+                <div v-show='showControls' id='controls'>
+                  <h4 @click='renameTopic()' style='cursor:pointer; text-decoration:underline;'>Renombrar el tema</h4>
+                  <h4 @click='$router.push("/topics/" + id + "/definitions/new")' style='cursor:pointer; text-decoration:underline;'>Agregar definición</h4>
+                </div>
 
               </div>
             </div>
@@ -63,7 +66,8 @@
         topic: {
           title: '...',
           definitions: []
-        }
+        },
+        showControls: true
       }
     },
 
@@ -83,7 +87,10 @@
 
             if (!topics) {
               alert('¡Sé el primero en registrar un tema!')
+              this.showControls = false
               return
+            } else {
+              this.showControls = true
             }
 
             let keys = Object.keys(topics)
@@ -95,6 +102,7 @@
           return
         }
 
+        this.showControls = true
         this.setTopicsRef(currentId, previousId)
       },
 
