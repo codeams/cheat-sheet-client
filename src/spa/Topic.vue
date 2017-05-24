@@ -80,11 +80,19 @@
         if (currentId === 'first') {
           this.db.ref('topics').once('value', (snap) => {
             let topics = snap.val()
+
+            if (!topics) {
+              alert('¡Sé el primero en registrar un tema!')
+              return
+            }
+
             let keys = Object.keys(topics)
             let firstKey = keys[0]
 
             this.$router.replace('/topics/' + firstKey)
           })
+
+          return
         }
 
         this.setTopicsRef(currentId, previousId)
