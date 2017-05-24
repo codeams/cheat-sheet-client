@@ -54,6 +54,22 @@
     },
 
     methods: {
+      log (row) {
+        let currentUser = this.auth.currentUser
+
+        this.db.ref('log')
+          .child(Date.now())
+          .set({
+            user: currentUser.displayName,
+            uid: currentUser.uid,
+            ...row
+          }).then(() => {
+
+          }).catch(() => {
+            alert('Ha ocurrido un error al guardar el log en el servidor remoto.')
+          })
+      },
+
       addTopic () {
         let name = prompt('Ingresa el nombre del tema a crear:')
         let validName = typeof name === 'string' && name.length > 4
@@ -62,6 +78,12 @@
           this.db.ref('topics').push({
             title: name,
             definitions: {}
+          }).then(() => {
+            this.log({
+              target: 'topic',
+              type: 'add',
+              title: name
+            })
           })
         } else {
           alert('El nombre debe ser de al menos 4 caracteres')

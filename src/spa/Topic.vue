@@ -109,15 +109,39 @@
     },
 
     methods: {
+      log (row, then) {
+        let currentUser = this.auth.currentUser
+
+        this.db.ref('log')
+          .child(Date.now())
+          .set({
+            user: currentUser.displayName,
+            uid: currentUser.uid,
+            ...row
+          }).then(() => {
+            if (then && typeof then === 'function') then()
+          }).catch(() => {
+            alert('Ha ocurrido un error al guardar el log en el servidor remoto.')
+          })
+      },
+
       renameTopic () {
-        let name = prompt('Ingresa el nuevo nombre para el tema:', this.topic.title)
+        let oldName = this.topic.title
+        let name = prompt('Ingresa el nuevo nombre para el tema:', oldName)
         let validName = typeof name === 'string' && name.length > 4
 
         if (validName) {
           this.db.ref('topics')
             .child(this.id)
             .child('title')
-            .set(name)
+            .set(name).then(() => {
+              name = oldName + ' => ' + name
+              this.log({
+                title: name,
+                target: 'topic',
+                type: 'edit'
+              })
+            })
         } else {
           alert('El nombre debe ser de al menos 4 caracteres')
         }
@@ -125,9 +149,16 @@
 
       deleteTopic () {
         if (this.canDeleteTopic) {
+          let name = this.topic.title
           this.db.ref('topics').child(this.id).remove()
             .then(() => {
-              this.$router.push('/')
+              this.log({
+                target: 'topic',
+                title: name,
+                type: 'delete'
+              }, () => {
+                this.$router.push('/')
+              })
             }).catch(() => {
               alert('Ha ocurrido un error en el servidor remoto al intentar elinimar el tema.')
             })
@@ -144,10 +175,25 @@
         this.db.ref('topics').child(currentId).on('value', (snap) => {
           console.log('asked topic')
 
-          let val = snap.val()
+          let topic = snap.val()
 
-          if (val) this.topic = val
-          else {
+          if (topic) {
+            this.topic = topic
+            if (topic.definitions) {
+              let array = []
+
+              for (let index in topic.definitions) {
+                array.push(topic.definitions[index])
+              }
+
+              this.topic.definitions = array.sort((a, b) => {
+                let textA = a.title.toLowerCase()
+                let textB = b.title.toLowerCase()
+
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+              })
+            }
+          } else {
             this.topic = {
               title: 'No se encuentra un topic con el id "' + this.id + '"',
               definitions: []
