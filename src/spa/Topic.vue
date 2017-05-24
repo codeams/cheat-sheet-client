@@ -239,7 +239,10 @@
       },
 
       deleteDefinition (definitionId) {
-        let definition = this.topic.definitions[definitionId]
+        let definition = this.topic.definitions.find((element) => {
+          if (element.id === definitionId) return true
+          else return false
+        })
 
         if (definition.creatorId === this.auth.currentUser.uid) {
           let really = confirm('¿Seguro que deseas eliminar esta definición?')
