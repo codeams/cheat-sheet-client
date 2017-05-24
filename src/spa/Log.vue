@@ -63,7 +63,7 @@
         list: null,
 
         tabFilterColumn: 'uid',
-        searchableAttributes: ['tagret', 'type', 'user', 'uid', 'timestamp', 'title']
+        searchableAttributes: ['tagret', 'type', 'user', 'uid', 'title']
       }
     },
 
